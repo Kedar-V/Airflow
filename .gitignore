@@ -1,0 +1,15 @@
+# Airflow
+logs/
+__pycache__/
+*.pyc
+*.pyo
+
+# Docker volumes
+postgres_data/
+data/
+analysis/
+
+# OS & IDE
+.DS_Store
+.vscode/
+.env
