@@ -179,6 +179,13 @@ Each run automatically:
 - Refreshes cached metrics in Redis
 - Retains database history for time-series analytics
 
+## 📸 Screenshots
+
+### Successful DAG Run
+![Successful DAG Run](./docs/images/success.png)
+
+*Screenshot shows a successful execution of the flight delay pipeline with all tasks completed (green)*
+
 ## 🧩 Future Enhancements
 
 - Incremental ingestion (daily append instead of full load)
