@@ -13,11 +13,11 @@ x-airflow-common: &airflow-common
     AIRFLOW__CORE__LOAD_EXAMPLES: "false"
     AIRFLOW_UID: ${AIRFLOW_UID:-50000}
   volumes:
-    - ./dags:/opt/airflow/dags
+    - ../dags:/opt/airflow/dags
     - ./logs:/opt/airflow/logs
-    - ./plugins:/opt/airflow/plugins
-    - ./data:/opt/airflow/data
-    - ./analysis:/opt/airflow/analysis
+    - ../plugins:/opt/airflow/plugins
+    - ../data:/opt/airflow/data
+    - ../analysis:/opt/airflow/analysis
   depends_on:
     - postgres
     - redis
