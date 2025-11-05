@@ -10,8 +10,9 @@ import redis
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import classification_report
 import joblib
+import seaborn as sns
+from sklearn.metrics import classification_report, confusion_matrix, ConfusionMatrixDisplay
 
 # === Directories ===
 DATA_DIR = "/opt/airflow/data"
@@ -130,24 +131,67 @@ def train_delay_model(**context):
     merged_path = context["ti"].xcom_pull(key="merged_path")
     df = pd.read_parquet(merged_path)
 
+    # Encode target
     df["target"] = df["delay_category"].map({"early": 0, "on_time": 1, "late": 2})
     features = ["month", "dep_delay", "arr_delay"]
     X = df[features]
     y = df["target"]
 
+    # Train/test split
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
+    # Scale
     scaler = StandardScaler()
     X_train_scaled = scaler.fit_transform(X_train)
     X_test_scaled = scaler.transform(X_test)
 
+    # Train Logistic Regression
     model = LogisticRegression(max_iter=200)
     model.fit(X_train_scaled, y_train)
     preds = model.predict(X_test_scaled)
+    probs = model.predict_proba(X_test_scaled)
 
+    # Generate classification report
     report = classification_report(y_test, preds, target_names=["early", "on_time", "late"])
     print("📈 Model performance (10% data):\n", report)
 
+    # === 📊 Plot 1: Confusion Matrix ===
+    cm = confusion_matrix(y_test, preds)
+    disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=["early", "on_time", "late"])
+    disp.plot(cmap="Blues", values_format="d")
+    plt.title("Confusion Matrix - Flight Delay Classifier")
+    plt.tight_layout()
+    cm_path = os.path.join(ANALYSIS_DIR, "confusion_matrix.png")
+    plt.savefig(cm_path)
+    plt.close()
+    print(f"✅ Saved confusion matrix → {cm_path}")
+
+    # === 📊 Plot 2: Probability Distribution (per class) ===
+    plt.figure(figsize=(8, 4))
+    sns.boxplot(data=pd.DataFrame(probs, columns=["early", "on_time", "late"]))
+    plt.title("Predicted Probability Distribution per Class")
+    plt.ylabel("Probability")
+    plt.tight_layout()
+    prob_path = os.path.join(ANALYSIS_DIR, "probability_distribution.png")
+    plt.savefig(prob_path)
+    plt.close()
+    print(f"✅ Saved probability distribution → {prob_path}")
+
+    # === 📊 Plot 3: Feature Importance (coefficients) ===
+    plt.figure(figsize=(6, 4))
+    coef_df = pd.DataFrame({
+        "Feature": features,
+        "Importance": model.coef_[0]
+    })
+    sns.barplot(x="Feature", y="Importance", data=coef_df)
+    plt.title("Feature Importance (Logistic Regression Coefficients)")
+    plt.tight_layout()
+    feat_path = os.path.join(ANALYSIS_DIR, "feature_importance.png")
+    plt.savefig(feat_path)
+    plt.close()
+    print(f"✅ Saved feature importance plot → {feat_path}")
+
+    # Save model and scaler
     joblib.dump(model, os.path.join(ANALYSIS_DIR, "delay_model.pkl"))
     joblib.dump(scaler, os.path.join(ANALYSIS_DIR, "delay_scaler.pkl"))
     print("✅ Model and scaler saved.")

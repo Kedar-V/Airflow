@@ -194,13 +194,12 @@ Each run automatically:
 ![avg_flight_delay_by_month](./analysis/avg_flight_delay_by_month.png)
 
 **Key Findings:**
-- **Seasonal Trends**: Higher delays observed during summer months (June-August) and winter holiday season (December)
+- **Seasonal Trends**: Higher delays observed during summer months (June-August)
 
 #### Model Performance
-The Logistic Regression model achieves:
-- Overall Accuracy: 63%
-- Best Performance: Early flight prediction (72% F1-score)
-- Areas for Improvement: Late flight prediction (56% F1-score)
+![confusion_matrix](./analysis/confusion_matrix.png)
+![feature_importance](./analysis/feature_importance.png)
+![probability_distribution](./analysis/probability_distribution.png)
 
 #### Redis Metrics Cache
 ![Redis Metrics](./docs/images/redis.png)
