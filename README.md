@@ -160,19 +160,7 @@ docker exec -it docker-airflow-scheduler-1 airflow dags trigger flights_pipeline
 
 ## 📈 Model Results
 
-Sample console output for model training:
 
-```
-📈 Model performance:
-              precision    recall  f1-score   support
-early              0.65      0.80      0.72       600
-on_time            0.59      0.75      0.66       950
-late               0.47      0.68      0.56       720
-
-accuracy                               0.63      2270
-macro avg          0.57      0.74      0.65      2270
-weighted avg       0.58      0.63      0.62      2270
-```
 
 ## 🧹 Cleanup & Maintenance
 
@@ -180,8 +168,6 @@ Each run automatically:
 - Cleans intermediate .parquet files
 - Refreshes cached metrics in Redis
 - Retains database history for time-series analytics
-
-## 📸 Results
 
 ### Successful DAG Run
 ![Successful DAG Run](./docs/images/success.png)
@@ -196,7 +182,7 @@ Each run automatically:
 **Key Findings:**
 - **Seasonal Trends**: Higher delays observed during summer months (June-August)
 
-#### Model Performance
+## Model Performance
 ![confusion_matrix](./analysis/confusion_matrix.png)
 ![feature_importance](./analysis/feature_importance.png)
 ![probability_distribution](./analysis/probability_distribution.png)
