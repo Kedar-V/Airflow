@@ -52,7 +52,7 @@ The pipeline runs **daily** via Airflow’s scheduler, simulating an incremental
 │ 7️⃣ Cleanup Files   │
 └────────────────────┘
 ```
-
+![DAG](./docs/images/DAG.png)
 
 ### **Tech Stack**
 
@@ -155,21 +155,21 @@ Or run manually:
 docker exec -it docker-airflow-scheduler-1 airflow dags trigger flights_pipeline_dag_final
 ```
 
-📊 Example Results
 
-Sample console output for model training:
-
-## 📈 Results
+## 📈 Model Results
 
 Sample console output for model training:
 
 ```
 📈 Model performance:
               precision    recall  f1-score   support
-early              0.83      0.80      0.82       600
-on_time            0.79      0.85      0.82       950
-late               0.87      0.81      0.84       720
-accuracy                               0.83      2270
+early              0.65      0.80      0.72       600
+on_time            0.59      0.75      0.66       950
+late               0.47      0.68      0.56       720
+
+accuracy                               0.63      2270
+macro avg          0.57      0.74      0.65      2270
+weighted avg       0.58      0.63      0.62      2270
 ```
 
 ## 🧹 Cleanup & Maintenance
@@ -179,12 +179,18 @@ Each run automatically:
 - Refreshes cached metrics in Redis
 - Retains database history for time-series analytics
 
-## 📸 Screenshots
+## 📸 Results
 
 ### Successful DAG Run
 ![Successful DAG Run](./docs/images/success.png)
 
 *Screenshot shows a successful execution of the flight delay pipeline with all tasks completed (green)*
+
+### Analytics
+![avg_order_value_by_segment](./analysis/avg_order_value_by_segment.png)
+![avg_flight_delay_by_month](./analysis/avg_flight_delay_by_month.png)
+
+
 
 ## 🧩 Future Enhancements
 
