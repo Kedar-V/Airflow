@@ -128,11 +128,13 @@ This model is retrained daily to capture evolving flight delay trends, making it
 ```bash
 git clone https://github.com/<your-username>/flight-delay-pipeline.git
 cd flight-delay-pipeline
+```
 
 ### 2️⃣ Start Airflow Environment
 ```bash
 docker-compose up -d
 ```
+
 
 This starts:
 - Airflow Webserver (localhost:8080)
@@ -186,11 +188,54 @@ Each run automatically:
 
 *Screenshot shows a successful execution of the flight delay pipeline with all tasks completed (green)*
 
-### Analytics
-![avg_order_value_by_segment](./analysis/avg_order_value_by_segment.png)
+### Analytics & Insights
+
+#### Flight Delay Patterns
 ![avg_flight_delay_by_month](./analysis/avg_flight_delay_by_month.png)
 
+**Key Findings:**
+- **Seasonal Trends**: Higher delays observed during summer months (June-August) and winter holiday season (December)
 
+#### Model Performance
+The Logistic Regression model achieves:
+- Overall Accuracy: 63%
+- Best Performance: Early flight prediction (72% F1-score)
+- Areas for Improvement: Late flight prediction (56% F1-score)
+
+#### Redis Metrics Cache
+![Redis Metrics](./docs/images/redis.png)
+
+
+These metrics are cached in Redis for fast retrieval and are updated after each pipeline run. The negative average delay for "early" category indicates these flights arrived before scheduled time.
+
+### Why Redis for Metrics Storage?
+
+Redis serves several critical purposes in our pipeline:
+
+1. **Performance Optimization**
+   - In-memory storage provides sub-millisecond response times
+   - Reduces load on PostgreSQL for frequently accessed metrics
+   - Perfect for real-time dashboards and monitoring
+
+2. **Data Access Patterns**
+   - Key-value structure ideal for categorical metrics
+   - Hash data type efficiently stores multiple fields per category
+   - Atomic operations ensure data consistency
+
+3. **Operational Benefits**
+   - Acts as a buffer between analysis and consumption layers
+   - Enables horizontal scaling for read-heavy workloads
+   - Built-in TTL capability for automatic data freshness
+
+4. **Use Cases**
+   - Real-time delay statistics for airport displays
+   - Quick lookups for customer service applications
+   - Live monitoring of flight performance metrics
+   - API endpoints for mobile apps and web services
+
+By using Redis alongside PostgreSQL, we create a robust two-tier storage strategy:
+- PostgreSQL: Durable storage, complex queries, historical analysis
+- Redis: Fast access, real-time metrics, high-concurrency reads
 
 ## 🧩 Future Enhancements
 
