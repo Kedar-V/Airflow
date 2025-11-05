@@ -182,8 +182,7 @@ Each run automatically:
 **Key Findings:**
 - **Seasonal Trends**: Higher delays observed during summer months (June-August)
 
-## Model Performance
-![confusion_matrix](./analysis/confusion_matrix.png)
+## Model Plots
 ![feature_importance](./analysis/feature_importance.png)
 ![probability_distribution](./analysis/probability_distribution.png)
 
