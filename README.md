@@ -17,6 +17,7 @@ The goal is to build an **end-to-end orchestration pipeline** that:
 6. Trains a **machine learning model** to predict delay categories
 7. Stores summary metrics in **Redis** for fast access
 8. Cleans up intermediate artifacts to maintain a lean workflow
+9. Ingests related **weather data** (`weather.csv`) and joins it with flights for richer analysis
 
 The pipeline runs **daily** via Airflow’s scheduler, simulating an incremental data engineering workflow with predictive analytics.
 
@@ -27,9 +28,9 @@ The pipeline runs **daily** via Airflow’s scheduler, simulating an incremental
 ### **High-Level Workflow**
 
 ```
-┌────────────────────┐
-│ 1️⃣ Ingest Flights  │
-└──────────┬─────────┘
+┌────────────────────────────────────┐
+│ 1️⃣ Ingest Flights & Weather Data   │
+└──────────┬─────────────────────────┘
            ▼
 ┌──────────┴─────────┐
 │ 2️⃣ Transform Delays │
@@ -71,11 +72,12 @@ The pipeline runs **daily** via Airflow’s scheduler, simulating an incremental
 
 ## 📦 DAG Design & Tasks
 
-### **DAG ID:** `flights_pipeline_dag_final`
+### **DAG ID:** `flights_pipeline_dag_final_sampled`
 
 | Step | Task ID | Description | Output |
 |------|----------|--------------|---------|
 | 1️⃣ | `ingest_flights` | Loads raw `flights.csv` (10% sample) | `flights_raw.parquet` |
+| 1b | `ingest_weather` | Loads weather data (`weather.csv`) used to enrich flights | `weather.parquet` |
 | 2️⃣ | `delay_processing` (TaskGroup) | Parallel processing of departure & arrival delays | `dep_delay.parquet`, `arr_delay.parquet` |
 | 3️⃣ | `merge_delays` | Joins dep/arr delay tables, computes `total_delay` & category | `flights_merged.parquet` |
 | 4️⃣ | `load_to_postgres` | Writes merged data into Postgres (`fact_flights`) | Database table |
@@ -119,6 +121,7 @@ This model is retrained daily to capture evolving flight delay trends, making it
 | `fact_flights` (Postgres) | Cleaned and merged flight data |
 | `Redis Keys: delay:*` | Cached metrics for quick lookup |
 | `/opt/airflow/data/processed/*.parquet` | Intermediate transformation outputs |
+| `/opt/airflow/data/processed/weather.parquet` | Processed weather dataset used to enrich flights |
 
 ---
 
